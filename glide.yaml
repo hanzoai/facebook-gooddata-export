@@ -1,0 +1,9 @@
+package: "facebook-export"
+ignore:
+- facebook-export
+excludeDirs:
+- node_modules
+import:
+- package: github.com/hanzo-io/oauthful
+  version: master
+

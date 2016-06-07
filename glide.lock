@@ -1,0 +1,6 @@
+hash: 0127cf2f89dfedc9db9a67d5605d279b458054536d4167f09d041adbad7e60e7
+updated: 2016-06-06T23:41:12.183186085-05:00
+imports:
+- name: github.com/hanzo-io/oauthful
+  version: 2a1572d4dfadedf246fe6d0ac6d5a4a5500ed469
+devImports: []
