@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="oauth.js"></script>
+  </head>
+  <body>
+    <h1>Facebook OAuth2.0</h1>
+    <form>
+      <div>
+        <label>App Id</label>
+        <input name="client_id" type="text"></input>
+      </div>
+      <div>
+        <label>Redirect URI</label>
+        <input name="redirect_uri" type="text"></input>
+      </div>
+      <div>
+        <label>Scope</label>
+        <input name="scope" type="text"></input>
+      </div>
+      <input name="state" type="hidden"></input>
+    </form>
+  </body>
+</html>

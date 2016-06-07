@@ -1,9 +1,10 @@
-package: "facebook-export"
+package: "facebook-gooddata-export"
 ignore:
-- facebook-export
+- facebook-gooddata-export
 excludeDirs:
 - node_modules
 import:
 - package: github.com/hanzo-io/oauthful
   version: master
-
+- package: github.com/flosch/pongo2
+  version: master
