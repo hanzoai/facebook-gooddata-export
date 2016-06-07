@@ -1,6 +1,12 @@
-hash: 0127cf2f89dfedc9db9a67d5605d279b458054536d4167f09d041adbad7e60e7
-updated: 2016-06-06T23:41:12.183186085-05:00
+hash: 62920c96755bafe221f37955ea46c4dd86295b6df07446997a57805a8969c78e
+updated: 2016-06-07T17:17:38.985056847-05:00
 imports:
+- name: github.com/flosch/pongo2
+  version: 7f5515449ea9bbeb00256d9cbb654c556e7d0146
 - name: github.com/hanzo-io/oauthful
-  version: 2a1572d4dfadedf246fe6d0ac6d5a4a5500ed469
+  version: 3a8fa61301adba39cc568077d546ee3485a926a6
+- name: github.com/skratchdot/open-golang
+  version: 75fb7ed4208cf72d323d7d02fd1a5964a7a9073c
+  subpackages:
+  - open
 devImports: []
