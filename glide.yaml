@@ -8,3 +8,5 @@ import:
   version: master
 - package: github.com/skratchdot/open-golang
   version: master
+- package: github.com/gocarina/gocsv
+  version: master
