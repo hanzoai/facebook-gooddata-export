@@ -20,6 +20,17 @@ type AdsActionStats struct {
 	Value float64 `json:"value"`
 }
 
+type FacebookAsyncJobResponse struct {
+	ReportRunId string        `json:"report_run_id"`
+	Error       FacebookError `json:"error"`
+}
+
+type FacebookAsyncJobStatus struct {
+	Id                     string        `json:"id"`
+	AsyncPercentCompletion int64         `json:"async_percent_completion"`
+	Error                  FacebookError `json:"error"`
+}
+
 type Date struct {
 	Date time.Time `json:"date"`
 }

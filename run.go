@@ -92,7 +92,7 @@ func csvExport(toks *oauthful.AccessTokenResponse) {
 	MkDir(Config.ExportPath)
 	now := time.Now()
 
-	for false && now.After(date.Date) {
+	for now.After(date.Date) {
 		fmt.Printf("Querying from Date %v\n", date.Date)
 
 		ioutil.WriteFile(Config.DataPath+"/date", EncodeBytes(date), os.ModePerm)
@@ -127,7 +127,6 @@ func mergeFiles(prefix string) error {
 	}
 
 	fmt.Printf("Merging %v.csv\n", prefix)
-
 	filename := exportPath + "/" + prefix + ".csv"
 
 	_, _ = os.OpenFile(filename, os.O_CREATE, os.ModePerm)
@@ -141,6 +140,10 @@ func mergeFiles(prefix string) error {
 	first := true
 	for _, fileInfo := range fileInfos {
 		fn := fileInfo.Name()
+
+		if fn == ".DS_Store" {
+			continue
+		}
 
 		f, _ := os.Open(exportPath + "/" + prefix + "/" + fn)
 		defer f.Close()
@@ -207,7 +210,72 @@ func queryForDate(q string, toks *oauthful.AccessTokenResponse, date time.Time, 
 
 	url := fmt.Sprintf(q, Config.AppId, toks.AccessToken, since.Format("2006-01-02"), until.Format("2006-01-02"))
 
-	wrapper := FacebookInsightWrapper{Paging: FacebookPaging{Next: Config.GraphUrl + url}}
+	asyncJob := FacebookAsyncJobResponse{}
+	for {
+		// Issue a POST request to start async job
+		postUrl := Config.GraphUrl + "/" + url
+		res, err := http.Post(postUrl, "application/json", nil)
+		if err != nil {
+			return err
+		}
+
+		err = Decode(res.Body, &asyncJob)
+		if err != nil {
+			return err
+		}
+
+		if asyncJob.Error.Message != "" {
+			if strings.Contains(asyncJob.Error.Message, "#17") {
+				fmt.Println("Out of API, waiting 10 minutes before retrying...")
+				time.Sleep(time.Second * 600)
+			}
+			continue
+		}
+
+		break
+	}
+
+	// fmt.Printf("zzz %#v", postUrl)
+
+	// Start polling for job completion
+	id := asyncJob.ReportRunId
+	asyncJobUrl := Config.GraphUrl + "/" + id + "?access_token=" + toks.AccessToken
+	for {
+		fmt.Printf("Waiting 5 seconds for Async Job %v to Complete...\n", id)
+		time.Sleep(time.Second * 5)
+		res, err := http.Get(asyncJobUrl)
+		if err != nil {
+			return err
+		}
+
+		// fmt.Printf("zzz %#v", asyncJobUrl)
+
+		asyncJobStatus := FacebookAsyncJobStatus{}
+		err = Decode(res.Body, &asyncJobStatus)
+		if err != nil {
+			return err
+		}
+
+		if asyncJobStatus.Error.Message != "" {
+			if strings.Contains(asyncJobStatus.Error.Message, "#17") {
+				fmt.Println("Out of API, waiting 10 minutes before retrying...")
+				time.Sleep(time.Second * 600)
+			}
+			// return errors.New(asyncJobStatus.Error.Message)
+			continue
+		}
+
+		fmt.Printf("Job Percent %v\n", asyncJobStatus.AsyncPercentCompletion)
+		if asyncJobStatus.AsyncPercentCompletion == 100 {
+			break
+		}
+	}
+
+	// Wait a second so facebook can serve the report
+	time.Sleep(time.Second)
+
+	// Start querying data out
+	wrapper := FacebookInsightWrapper{Paging: FacebookPaging{Next: Config.GraphUrl + "/" + id + "/insights?access_token=" + toks.AccessToken + "&limit=100"}}
 
 	for wrapper.Paging.Next != "" {
 		nextUrl := wrapper.Paging.Next
