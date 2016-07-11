@@ -143,4 +143,7 @@ type FacebookInsight struct {
 	// VideoP95WatchedActions      []AdsActionStats `json:"video_p95_watched_actions,omitempty" csv:"video_p95_watched_actions"`
 	WebsiteCtr    []AdsActionStats `json:"website_ctr,omitempty" csv:"-"`
 	WebsiteCtrStr string           `csv:"website_ctr"`
+
+	CostPerActionType    []AdsActionStats `json:"cost_per_action_type" csv:"-"`
+	CostPerActionTypeStr string           `csv:"cost_per_action_type"`
 }

@@ -1,10 +1,10 @@
-hash: b3d61045505d7ae75e05ccedade86177a7f339f5fae892bacad99cf92f05c814
-updated: 2016-06-08T14:28:11.006850782-05:00
+hash: b6b44403a4ce865059412bca42ea22ba04ebf1b0e3d66aec450ff19773bf8a9f
+updated: 2016-07-05T11:32:58.119880361-05:00
 imports:
 - name: github.com/flosch/pongo2
   version: 7f5515449ea9bbeb00256d9cbb654c556e7d0146
 - name: github.com/gocarina/gocsv
-  version: 98276306ffab1196d8a30c8a5b5c4bd91864e3c8
+  version: 9f9602984ece3d59bf105d2e5006e8446badd357
 - name: github.com/hanzo-io/oauthful
   version: 3a8fa61301adba39cc568077d546ee3485a926a6
 - name: github.com/skratchdot/open-golang

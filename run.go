@@ -210,7 +210,7 @@ func queryForDate(q string, toks *oauthful.AccessTokenResponse, date time.Time, 
 
 	url := fmt.Sprintf(q, Config.AppId, toks.AccessToken, since.Format("2006-01-02"), until.Format("2006-01-02"))
 
-	asyncJob := FacebookAsyncJobResponse{}
+	var asyncJob FacebookAsyncJobResponse
 	for {
 		// Issue a POST request to start async job
 		postUrl := Config.GraphUrl + "/" + url
@@ -219,16 +219,19 @@ func queryForDate(q string, toks *oauthful.AccessTokenResponse, date time.Time, 
 			return err
 		}
 
+		asyncJob = FacebookAsyncJobResponse{}
 		err = Decode(res.Body, &asyncJob)
 		if err != nil {
 			return err
 		}
 
 		if asyncJob.Error.Message != "" {
-			if strings.Contains(asyncJob.Error.Message, "#17") {
+			if strings.Contains(asyncJob.Error.Message, "#17") || strings.Contains(asyncJob.Error.Message, "rate limit") {
 				fmt.Println("Out of API, waiting 10 minutes before retrying...")
-				time.Sleep(time.Second * 600)
+			} else {
+				fmt.Printf("Error %v\n", asyncJob.Error.Message)
 			}
+			time.Sleep(time.Second * 600)
 			continue
 		}
 
@@ -257,7 +260,7 @@ func queryForDate(q string, toks *oauthful.AccessTokenResponse, date time.Time, 
 		}
 
 		if asyncJobStatus.Error.Message != "" {
-			if strings.Contains(asyncJobStatus.Error.Message, "#17") {
+			if strings.Contains(asyncJobStatus.Error.Message, "#17") || strings.Contains(asyncJob.Error.Message, "rate limit") {
 				fmt.Println("Out of API, waiting 10 minutes before retrying...")
 				time.Sleep(time.Second * 600)
 			}
@@ -296,7 +299,7 @@ func queryForDate(q string, toks *oauthful.AccessTokenResponse, date time.Time, 
 
 		// Retry if out of api, otherwise its super annoying
 		if wrapper.Error.Message != "" {
-			if strings.Contains(wrapper.Error.Message, "#17") {
+			if strings.Contains(wrapper.Error.Message, "#17") || strings.Contains(asyncJob.Error.Message, "rate limit") {
 				wrapper.Paging.Next = nextUrl
 				fmt.Println("Out of API, waiting 10 minutes before retrying...")
 				time.Sleep(time.Second * 600)
@@ -319,6 +322,7 @@ func queryForDate(q string, toks *oauthful.AccessTokenResponse, date time.Time, 
 	for i, insight := range *insights {
 		(*insights)[i].ActionsStr = flattenJson(Encode(insight.Actions))
 		(*insights)[i].WebsiteCtrStr = flattenJson(Encode(insight.WebsiteCtr))
+		(*insights)[i].CostPerActionTypeStr = flattenJson(Encode(insight.CostPerActionType))
 	}
 
 	return nil
